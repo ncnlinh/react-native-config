@@ -3,6 +3,7 @@ package com.lugg.ReactNativeConfig;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.location.LocationManager;
 import android.util.Log;
 
@@ -34,7 +35,15 @@ public class ReactNativeConfigModule extends ReactContextBaseJavaModule {
     final Map<String, Object> constants = new HashMap<>();
 
     try {
-      Class clazz = Class.forName(getReactApplicationContext().getPackageName() + ".BuildConfig");
+      Context context = getReactApplicationContext();
+      int resId = context.getResources().getIdentifier("build_config_package", "string", context.getPackageName());
+      String className;
+      try {
+        className = context.getString(resId);
+      } catch (Resources.NotFoundException e) {
+        className = getReactApplicationContext().getApplicationContext().getPackageName();
+      }
+      Class clazz = Class.forName(className + ".BuildConfig");
       Field[] fields = clazz.getDeclaredFields();
       for(Field f: fields) {
         try {
